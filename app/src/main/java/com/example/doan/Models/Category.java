@@ -1,0 +1,87 @@
+/* MSSV: 23162114
+        NAME: Pham Quang Vinh*/
+
+package com.example.doan.Models;
+
+import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
+
+public class Category implements Serializable {
+
+    @SerializedName("id")
+    private int id;
+
+    @SerializedName("name")
+    private String name;
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    @SerializedName("image")
+    private String image;
+
+    @SerializedName("description")
+    private String description;
+
+    @SerializedName("displayOrder")
+    private int displayOrder;
+
+    @SerializedName("isActive")
+    private boolean isActive;
+
+    public Category(int i, String tràSữa, String image) {}
+
+    public Category(int id, String name, String description, int displayOrder, boolean isActive) {
+        this.id = id;
+        this.name = name;
+        this.image = image;
+        this.description = description;
+        this.displayOrder = displayOrder;
+        this.isActive = isActive;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(int displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+}
