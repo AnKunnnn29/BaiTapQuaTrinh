@@ -353,3 +353,27 @@ Nếu gặp vấn đề:
 **Happy Coding! 🎉**
 
 *Last updated: November 27, 2025*
+
+
+
+===============================
+<img width="403" height="870" alt="image" src="https://github.com/user-attachments/assets/87bd7fa6-7362-423d-ab67-8ba5f3cbff52" />
+
+<img width="418" height="867" alt="image" src="https://github.com/user-attachments/assets/76548960-214e-4248-8c45-993045f25be0" />
+
+<img width="429" height="828" alt="image" src="https://github.com/user-attachments/assets/b9ec39f1-e188-450a-b40f-311f06dd5839" />
+
+<img width="448" height="912" alt="image" src="https://github.com/user-attachments/assets/fb282149-29cb-4217-a8f7-2b39690ab36c" />
+
+<img width="452" height="529" alt="image" src="https://github.com/user-attachments/assets/81613c76-de7b-4e48-9ef1-82fbf3e35838" />
+
+<img width="454" height="523" alt="image" src="https://github.com/user-attachments/assets/37de377c-fecf-40f2-b8f4-badf839f64a0" />
+
+<img width="353" height="763" alt="image" src="https://github.com/user-attachments/assets/a544d37a-ce81-44fc-9af3-4e45b56723fe" />
+
+
+
+
+
+
+
