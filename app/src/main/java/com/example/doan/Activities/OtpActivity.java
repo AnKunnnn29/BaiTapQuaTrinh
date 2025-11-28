@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.doan.Models.ApiResponse;
+import com.example.doan.Models.LoginResponse;
 import com.example.doan.Models.VerifyOtpRequest;
 import com.example.doan.Network.RetrofitClient;
 import com.example.doan.R;
@@ -46,6 +47,7 @@ public class OtpActivity extends AppCompatActivity {
             return;
         }
 
+        // Nút Verify OTP
         verifyButton.setOnClickListener(v -> {
             String otp = otpInput.getText().toString().trim();
             if (otp.length() != 6) {
@@ -55,42 +57,92 @@ public class OtpActivity extends AppCompatActivity {
             verifyOtp(otp);
         });
 
-        resendOtpText.setOnClickListener(v -> {
-            // TODO: Implement API to resend OTP
-            Toast.makeText(this, "Đã gửi lại mã OTP.", Toast.LENGTH_SHORT).show();
-        });
+        // Text resend OTP
+        resendOtpText.setOnClickListener(v -> resendOtp());
     }
 
+    // ===============================
+    // API #1 — VERIFY OTP
+    // ===============================
     private void verifyOtp(String otp) {
         VerifyOtpRequest request = new VerifyOtpRequest(userIdentifier, otp);
 
-        RetrofitClient.getInstance(this).getApiService().verifyOtp(request).enqueue(new Callback<ApiResponse<Void>>() {
-            @Override
-            public void onResponse(@NonNull Call<ApiResponse<Void>> call, @NonNull Response<ApiResponse<Void>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<Void> apiResponse = response.body();
-                    if (apiResponse.isSuccess()) {
-                        Toast.makeText(OtpActivity.this, "Xác thực thành công! Vui lòng đăng nhập.", Toast.LENGTH_LONG).show();
+        RetrofitClient.getInstance(this).getApiService()
+                .verifyOtpNew(request)
+                .enqueue(new Callback<ApiResponse<LoginResponse>>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ApiResponse<LoginResponse>> call,
+                                           @NonNull Response<ApiResponse<LoginResponse>> response) {
 
-                        Intent intent = new Intent(OtpActivity.this, LoginActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        String message = apiResponse.getMessage() != null ? apiResponse.getMessage() : "Mã OTP không hợp lệ.";
-                        Toast.makeText(OtpActivity.this, message, Toast.LENGTH_SHORT).show();
+                        if (response.isSuccessful() && response.body() != null) {
+                            ApiResponse<LoginResponse> apiResponse = response.body();
+
+                            if (apiResponse.isSuccess()) {
+                                Toast.makeText(OtpActivity.this,
+                                        "Xác thực thành công! Vui lòng đăng nhập.",
+                                        Toast.LENGTH_LONG).show();
+
+                                Intent intent = new Intent(OtpActivity.this, LoginActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(OtpActivity.this,
+                                        apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(OtpActivity.this,
+                                    "Lỗi server: " + response.code(),
+                                    Toast.LENGTH_LONG).show();
+                        }
                     }
-                } else {
-                    Toast.makeText(OtpActivity.this, "Xác thực thất bại. Lỗi Server: " + response.code(), Toast.LENGTH_LONG).show();
-                    Log.e(TAG, "OTP verification failed, Code: " + response.code());
-                }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<ApiResponse<Void>> call, @NonNull Throwable t) {
-                Log.e(TAG, "Connection error: " + t.getMessage());
-                Toast.makeText(OtpActivity.this, "Không thể kết nối đến server.", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Call<ApiResponse<LoginResponse>> call, @NonNull Throwable t) {
+                        Toast.makeText(OtpActivity.this,
+                                "Không thể kết nối đến server: " + t.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // ===============================
+    // API #2 — RESEND OTP
+    // ===============================
+    private void resendOtp() {
+
+        RetrofitClient.getInstance(this).getApiService()
+                .resendOtp(userIdentifier)
+                .enqueue(new Callback<ApiResponse<String>>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ApiResponse<String>> call,
+                                           @NonNull Response<ApiResponse<String>> response) {
+
+                        if (response.isSuccessful() && response.body() != null) {
+                            ApiResponse<String> apiResponse = response.body();
+
+                            if (apiResponse.isSuccess()) {
+                                Toast.makeText(OtpActivity.this,
+                                        "OTP đã được gửi lại!",
+                                        Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(OtpActivity.this,
+                                        apiResponse.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+
+                        } else {
+                            Toast.makeText(OtpActivity.this,
+                                    "Lỗi server khi gửi OTP lại",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<ApiResponse<String>> call, @NonNull Throwable t) {
+                        Toast.makeText(OtpActivity.this,
+                                "Không thể kết nối đến server.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

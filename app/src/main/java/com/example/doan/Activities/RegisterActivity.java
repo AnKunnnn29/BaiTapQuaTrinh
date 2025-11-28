@@ -49,9 +49,9 @@ public class RegisterActivity extends AppCompatActivity {
         String username = usernameInput.getText().toString().trim();
         String password = passwordInput.getText().toString().trim();
         String confirmPassword = confirmPasswordInput.getText().toString().trim();
-        String phone = phoneInput.getText().toString().trim();
+        String email = phoneInput.getText().toString().trim();
 
-        if (username.isEmpty() || password.isEmpty() || phone.isEmpty()) {
+        if (username.isEmpty() || password.isEmpty() || email.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin bắt buộc.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -66,7 +66,7 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        RegisterRequest registerRequest = new RegisterRequest(username, phone, password, username, "");
+        RegisterRequest registerRequest = new RegisterRequest(username, email, password, username, "");
 
         RetrofitClient.getInstance(this).getApiService().register(registerRequest).enqueue(new Callback<ApiResponse<RegisterResponse>>() {
             @Override
@@ -75,10 +75,15 @@ public class RegisterActivity extends AppCompatActivity {
                     ApiResponse<RegisterResponse> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
                         Toast.makeText(RegisterActivity.this, "Đăng ký thành công! Vui lòng xác thực OTP.", Toast.LENGTH_LONG).show();
+                        Log.d(TAG, "Creating Intent to OtpActivity...");
                         Intent intent = new Intent(RegisterActivity.this, OtpActivity.class);
-                        intent.putExtra("USER_IDENTIFIER", username);
+                        intent.putExtra("USER_IDENTIFIER", email);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        Log.d(TAG, "Starting OtpActivity...");
                         startActivity(intent);
+                        Log.d(TAG, "Finishing RegisterActivity...");
                         finish();
+                        Log.d(TAG, "=============== END REGISTER SUCCESS ===============");
                     } else {
                         String message = apiResponse.getMessage() != null ? apiResponse.getMessage() : "Đăng ký thất bại.";
                         Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_LONG).show();

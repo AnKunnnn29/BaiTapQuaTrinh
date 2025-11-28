@@ -371,6 +371,7 @@ Nếu gặp vấn đề:
 
 <img width="353" height="763" alt="image" src="https://github.com/user-attachments/assets/a544d37a-ce81-44fc-9af3-4e45b56723fe" />
 
+![UI](./images/verify-otp.png)
 
 
 
