@@ -1,5 +1,8 @@
 package com.example.doan.Fragments;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +17,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.doan.Activities.CategoryActivity;
+import com.example.doan.Activities.LoginActivity;
 import com.example.doan.Adapters.CategoryAdapter;
 import com.example.doan.Models.ApiResponse;
 import com.example.doan.Models.Category;
@@ -31,7 +36,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements CategoryAdapter.OnCategoryClickListener {
 
     private RecyclerView categoryRecyclerView;
     private RecyclerView productRecyclerView;
@@ -53,13 +58,13 @@ public class HomeFragment extends Fragment {
         setupProductRecyclerView();
 
         loadCategories();
-        loadProducts();
+        loadAllProducts(); // Initially load all products
 
         return view;
     }
 
     private void setupCategoryRecyclerView() {
-        categoryAdapter = new CategoryAdapter(getContext(), categoryList);
+        categoryAdapter = new CategoryAdapter(getContext(), categoryList, this);
         categoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         categoryRecyclerView.setAdapter(categoryAdapter);
     }
@@ -70,6 +75,28 @@ public class HomeFragment extends Fragment {
         productRecyclerView.setAdapter(productAdapter);
     }
 
+    @Override
+    public void onCategoryClick(int categoryId) {
+        if (categoryId == 0) {
+            loadAllProducts();
+            return;
+        }
+
+        // Kiểm tra xem người dùng đã đăng nhập chưa
+        SharedPreferences prefs = getContext().getSharedPreferences("UTETeaPrefs", Context.MODE_PRIVATE);
+        String token = prefs.getString("jwt_token", null);
+
+        if (token == null || token.isEmpty()) {
+            // Người dùng chưa đăng nhập, chuyển đến màn hình đăng nhập
+            Toast.makeText(getContext(), "Please log in to see products by category", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            startActivity(intent);
+        } else {
+            // Người dùng đã đăng nhập, tải sản phẩm
+            loadProductsByCategory(categoryId);
+        }
+    }
+
     private void loadCategories() {
         ApiService apiService = RetrofitClient.getInstance(getContext()).getApiService();
         Call<ApiResponse<List<Category>>> call = apiService.getCategories();
@@ -77,9 +104,15 @@ public class HomeFragment extends Fragment {
         call.enqueue(new Callback<ApiResponse<List<Category>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<Category>>> call, Response<ApiResponse<List<Category>>> response) {
-                if (response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     List<Category> newCategories = response.body().getData();
                     if (newCategories != null) {
+                        categoryList.clear();
+                        // Add an "All" category to the beginning of the list
+                        Category allCategory = new Category();
+                        allCategory.setId(0); // Use 0 or another special ID for "All"
+                        allCategory.setName("All");
+                        categoryList.add(allCategory);
                         categoryList.addAll(newCategories);
                         categoryAdapter.notifyDataSetChanged();
                     }
@@ -95,47 +128,70 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void loadProducts() {
+    private void loadAllProducts() {
         ApiService apiService = RetrofitClient.getInstance(getContext()).getApiService();
         Call<ApiResponse<List<Drink>>> call = apiService.getDrinks();
 
         call.enqueue(new Callback<ApiResponse<List<Drink>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<Drink>>> call, Response<ApiResponse<List<Drink>>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<List<Drink>> apiResponse = response.body();
-                    if (apiResponse.isSuccess() && apiResponse.getData() != null) {
-                        // Convert Drink to Product for adapter
-                        productList.clear();
-                        for (com.example.doan.Models.Drink drink : apiResponse.getData()) {
-                            Product product = new Product();
-                            product.setId(String.valueOf(drink.getId()));
-                            product.setName(drink.getName());
-                            product.setDescription(drink.getDescription());
-                            product.setPrice((int) drink.getBasePrice());
-                            String fullImageUrl = RetrofitClient.getBaseUrl() + drink.getImageUrl();
-                            product.setThumbnail(fullImageUrl);
-                            productList.add(product);
-                        }
-                        productAdapter.notifyDataSetChanged();
-
-                        if (productList.isEmpty()) {
-                            Toast.makeText(getContext(), "Thực đơn hiện tại đang trống.", Toast.LENGTH_LONG).show();
-                        }
-                    } else {
-                        Toast.makeText(getContext(), "Lỗi: " + apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    updateProductListFromDrinks(response.body().getData());
                 } else {
-                    Toast.makeText(getContext(), "Lỗi tải thực đơn: " + response.code(), Toast.LENGTH_SHORT).show();
-                    Log.e("HomeFragment", "Lỗi tải sản phẩm, Code: " + response.code());
+                    Toast.makeText(getContext(), "Failed to load products", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<List<Drink>>> call, Throwable t) {
-                Log.e("HomeFragment", "Lỗi kết nối API: " + t.getMessage());
-                Toast.makeText(getContext(), "Không thể kết nối Server để tải thực đơn.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "An error occurred while loading products", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void loadProductsByCategory(int categoryId) {
+        ApiService apiService = RetrofitClient.getInstance(getContext()).getApiService();
+        Call<ApiResponse<List<Drink>>> call = apiService.getProductsByCategory(categoryId);
+
+        call.enqueue(new Callback<ApiResponse<List<Drink>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<Drink>>> call, Response<ApiResponse<List<Drink>>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    updateProductListFromDrinks(response.body().getData());
+                } else {
+                    Toast.makeText(getContext(), "Failed to load products for this category", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<List<Drink>>> call, Throwable t) {
+                Toast.makeText(getContext(), "An error occurred: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateProductListFromDrinks(List<Drink> drinks) {
+        productList.clear();
+        if (drinks != null) {
+            for (Drink drink : drinks) {
+                Product product = new Product();
+                product.setId(String.valueOf(drink.getId()));
+                product.setName(drink.getName());
+                product.setDescription(drink.getDescription());
+                product.setPrice((int) drink.getBasePrice());
+                // Construct the full image URL correctly
+                String fullImageUrl = RetrofitClient.getBaseUrl() + drink.getImageUrl();
+                product.setThumbnail(fullImageUrl);
+                productList.add(product);
+            }
+        }
+        productAdapter.notifyDataSetChanged();
+        checkIfProductListIsEmpty();
+    }
+
+    private void checkIfProductListIsEmpty() {
+        if (productList.isEmpty()) {
+            Toast.makeText(getContext(), "No products found.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

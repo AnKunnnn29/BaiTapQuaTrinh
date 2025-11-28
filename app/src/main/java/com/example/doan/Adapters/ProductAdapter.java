@@ -11,9 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.doan.Models.Drink;
 import com.example.doan.Models.Product;
 import com.example.doan.R;
+import com.example.doan.Network.RetrofitClient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
@@ -21,9 +24,26 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     private Context context;
     private List<Product> productList;
 
+    // Constructor for Product list
     public ProductAdapter(Context context, List<Product> productList) {
         this.context = context;
         this.productList = productList;
+    }
+
+    // Overloaded constructor for Drink list
+    public ProductAdapter(Context context, List<Drink> drinkList, boolean isDrink) {
+        this.context = context;
+        this.productList = new ArrayList<>();
+        for (Drink drink : drinkList) {
+            Product product = new Product();
+            product.setId(String.valueOf(drink.getId()));
+            product.setName(drink.getName());
+            product.setPrice((int) drink.getBasePrice());
+            // The imageUrl from the API is a relative path, so we prepend the base URL.
+            String fullImageUrl = RetrofitClient.getBaseUrl() + "/" + drink.getImageUrl();
+            product.setThumbnail(fullImageUrl);
+            this.productList.add(product);
+        }
     }
 
     @NonNull

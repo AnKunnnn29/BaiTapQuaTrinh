@@ -52,6 +52,12 @@ public interface ApiService {
     @GET("drinks/search")
     Call<ApiResponse<List<Drink>>> searchDrinks(@Query("keyword") String keyword);
 
+    // Simplified the endpoint to remove unsupported parameters
+    @GET("drinks/category/{categoryId}")
+    Call<ApiResponse<List<Drink>>> getProductsByCategory(
+            @Path("categoryId") int categoryId
+    );
+
     // ==================== STORES ====================
     @GET("stores")
     Call<ApiResponse<List<Store>>> getStores();
@@ -71,16 +77,6 @@ public interface ApiService {
 
     @GET("orders/{orderId}")
     Call<ApiResponse<Order>> getOrderById(@Path("orderId") int orderId);
-
-    // ==================== PRODUCTS ====================
-    @GET("products/category/{categoryId}")
-    Call<ApiResponse<List<Product>>> getProductsByCategory(
-            @Path("categoryId") int categoryId,
-            @Query("sortBy") String sortBy,
-            @Query("order") String order,
-            @Query("page") int page,
-            @Query("limit") int limit
-    );
 
     // ==================== LEGACY (Giữ lại để tương thích) ====================
     @GET("orders")

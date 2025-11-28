@@ -1,7 +1,6 @@
 package com.example.doan.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.doan.Activities.CategoryActivity;
 import com.example.doan.Models.Category;
 import com.example.doan.R;
 
@@ -18,12 +16,18 @@ import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
 
+    public interface OnCategoryClickListener {
+        void onCategoryClick(int categoryId);
+    }
+
     private Context context;
     private List<Category> categoryList;
+    private OnCategoryClickListener listener;
 
-    public CategoryAdapter(Context context, List<Category> categoryList) {
+    public CategoryAdapter(Context context, List<Category> categoryList, OnCategoryClickListener listener) {
         this.context = context;
         this.categoryList = categoryList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -39,9 +43,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         holder.categoryName.setText(category.getName());
 
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, CategoryActivity.class);
-            intent.putExtra("category_id", category.getId());
-            context.startActivity(intent);
+            if (listener != null) {
+                listener.onCategoryClick(category.getId());
+            }
         });
     }
 
