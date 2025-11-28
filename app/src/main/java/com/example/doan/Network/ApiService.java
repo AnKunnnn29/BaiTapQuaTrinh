@@ -6,6 +6,8 @@ import com.example.doan.Models.Drink;
 import com.example.doan.Models.LoginRequest;
 import com.example.doan.Models.LoginResponse;
 import com.example.doan.Models.Order;
+import com.example.doan.Models.OtpRequest;
+import com.example.doan.Models.OtpVerificationResponse;
 import com.example.doan.Models.Product;
 import com.example.doan.Models.RegisterRequest;
 import com.example.doan.Models.RegisterResponse;
@@ -31,6 +33,15 @@ public interface ApiService {
 
     @POST("auth/register")
     Call<ApiResponse<RegisterResponse>> register(@Body RegisterRequest request);
+
+    @POST("auth/register-with-otp")
+    Call<ApiResponse<String>> registerWithOtp(@Body RegisterRequest request);
+
+    @POST("auth/verify-otp")
+    Call<ApiResponse<OtpVerificationResponse>> verifyOtp(@Body OtpRequest otpRequest);
+
+    @POST("auth/resend-otp")
+    Call<ApiResponse<String>> resendOtp(@Body OtpRequest otpRequest);
 
     @GET("auth/health")
     Call<ApiResponse<String>> healthCheck();
@@ -68,6 +79,8 @@ public interface ApiService {
 
     @GET("orders/user/{userId}/current")
     Call<ApiResponse<Order>> getCurrentOrder(@Path("userId") int userId);
+
+
 
     @GET("orders/{orderId}")
     Call<ApiResponse<Order>> getOrderById(@Path("orderId") int orderId);

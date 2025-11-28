@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 // --- IMPORTS BỔ SUNG ĐỂ KHẮC PHỤC LỖI ---
 import com.example.doan.Models.ApiResponse;
 import com.example.doan.Models.RegisterRequest;
-import com.example.doan.Models.RegisterResponse;
 import com.example.doan.Network.RetrofitClient; // Sửa lỗi: RetrofitClient
 import com.example.doan.R; // Sửa lỗi: R.layout và R.id
 
@@ -73,14 +72,16 @@ public class RegisterActivity extends AppCompatActivity {
         RegisterRequest registerRequest = new RegisterRequest(username, phone, password, username, "");
 
         // Lỗi RetrofitClient, RegisterRequest, RegisterResponse đã được sửa
-        RetrofitClient.getInstance(this).getApiService().register(registerRequest).enqueue(new Callback<ApiResponse<RegisterResponse>>() {
+        RetrofitClient.getInstance(this).getApiService().registerWithOtp(registerRequest).enqueue(new Callback<ApiResponse<String>>() {
             @Override
-            public void onResponse(@NonNull Call<ApiResponse<RegisterResponse>> call, @NonNull Response<ApiResponse<RegisterResponse>> response) {
+            public void onResponse(@NonNull Call<ApiResponse<String>> call, @NonNull Response<ApiResponse<String>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<RegisterResponse> apiResponse = response.body();
+                    ApiResponse<String> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
-                        Toast.makeText(RegisterActivity.this, "Đăng ký thành công! Vui lòng đăng nhập.", Toast.LENGTH_LONG).show();
-                        finish();
+                        Toast.makeText(RegisterActivity.this, "Đăng ký thành công! Vui lòng xác thực OTP.", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(RegisterActivity.this, OtpVerificationActivity.class);
+                        intent.putExtra("phone", phone);
+                        startActivity(intent);
                     } else {
                         String message = apiResponse.getMessage() != null ? apiResponse.getMessage() : "Đăng ký thất bại.";
                         Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_LONG).show();
@@ -93,7 +94,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<ApiResponse<RegisterResponse>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<ApiResponse<String>> call, @NonNull Throwable t) {
                 Toast.makeText(RegisterActivity.this, "Không thể kết nối Server để đăng ký.", Toast.LENGTH_LONG).show();
                 Log.e(TAG, "Lỗi kết nối: " + t.getMessage());
             }
