@@ -72,6 +72,16 @@ public interface ApiService {
     @GET("orders/{orderId}")
     Call<ApiResponse<Order>> getOrderById(@Path("orderId") int orderId);
 
+    // ==================== PRODUCTS ====================
+    @GET("products/category/{categoryId}")
+    Call<ApiResponse<List<Product>>> getProductsByCategory(
+            @Path("categoryId") int categoryId,
+            @Query("sortBy") String sortBy,
+            @Query("order") String order,
+            @Query("page") int page,
+            @Query("limit") int limit
+    );
+
     // ==================== LEGACY (Giữ lại để tương thích) ====================
     @GET("orders")
     Call<List<Order>> getOrders(@Query("userId") int userId);

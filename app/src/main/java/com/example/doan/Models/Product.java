@@ -2,11 +2,12 @@ package com.example.doan.Models;
 
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
+import java.util.Date;
 
 public class Product implements Serializable {
 
-    @SerializedName("id")
-    private int id;
+    @SerializedName("_id")
+    private String id;
 
     @SerializedName("name")
     private String name;
@@ -15,31 +16,21 @@ public class Product implements Serializable {
     private String description;
 
     @SerializedName("price")
-    private double price;
+    private int price;
+
+    @SerializedName("thumbnail")
+    private String thumbnail;
+
+    @SerializedName("quantity")
+    private int quantity;
 
     @SerializedName("category")
-    private String category;
+    private Category category;
 
-    @SerializedName("image_url")
-    private String imageUrl;
+    @SerializedName("createdAt")
+    private Date createdAt;
 
-    @SerializedName("is_available")
-    private boolean isAvailable;
-
-
-    public Product(int id, String name, String description, double price, String category, String imageUrl, boolean isAvailable) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.category = category;
-        this.imageUrl = imageUrl;
-        this.isAvailable = isAvailable;
-    }
-    public Product() { }
-
-
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -51,30 +42,23 @@ public class Product implements Serializable {
         return description;
     }
 
-    public double getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public String getCategory() {
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public Category getCategory() {
         return category;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public boolean isAvailable() {
-        return isAvailable;
-    }
-
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", price=" + price +
-                ", category='" + category + '\'' +
-                ", isAvailable=" + isAvailable +
-                '}';
+    public Date getCreatedAt() {
+        return createdAt;
     }
 }

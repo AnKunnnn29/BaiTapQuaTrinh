@@ -64,11 +64,20 @@
             android:id="@+id/section_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Thực đơn/Sản phẩm"  android:textColor="@color/black"
+            android:text="Thực đơn/Sản phẩm"
+            android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginBottom="16dp"
             tools:ignore="HardcodedText" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/category_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/product_recycler_view"
