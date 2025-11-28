@@ -154,7 +154,7 @@
                 android:layout_height="wrap_content"
                 android:text="Đăng ký ngay"
                 android:textColor="@color/white"
-                android:textSize="16sp"
+                android:textSize="16sp"/>
         </LinearLayout>
 
     </LinearLayout>

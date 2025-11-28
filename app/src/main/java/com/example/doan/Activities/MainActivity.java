@@ -15,6 +15,7 @@ import com.example.doan.Fragments.HomeFragment;
 import com.example.doan.Fragments.OrderFragment;
 import com.example.doan.R;
 import com.example.doan.Fragments.StoreFragment;
+import com.example.doan.Utils.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -29,9 +30,11 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         setContentView(R.layout.activity_main);
 
         TextView userNameTextView = findViewById(R.id.user_name);
-        String username = getIntent().getStringExtra("USER_NAME");
-        if(username != null && !username.isEmpty()){
-            userNameTextView.setText("Hi, " + username);
+        SessionManager sessionManager = new SessionManager(this);
+        String fullName = sessionManager.getFullName();
+
+        if(sessionManager.isLoggedIn() && fullName != null && !fullName.isEmpty()){
+            userNameTextView.setText("Hi, " + fullName);
         } else {
             userNameTextView.setText("Hi, Guest");
         }

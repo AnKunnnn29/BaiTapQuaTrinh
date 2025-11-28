@@ -12,11 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.doan.Models.ApiResponse;
 import com.example.doan.Models.Drink;
+import com.example.doan.Models.Product;
 import com.example.doan.Adapters.ProductAdapter;
 import com.example.doan.Network.ApiService;
 import com.example.doan.Network.RetrofitClient;
 import com.example.doan.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -62,8 +64,22 @@ public class CategoryActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     List<Drink> newDrinks = response.body().getData();
                     if (newDrinks != null && !newDrinks.isEmpty()) {
-                        // Use the new constructor in ProductAdapter
-                        ProductAdapter productAdapter = new ProductAdapter(CategoryActivity.this, newDrinks, true);
+                        List<Product> productList = new ArrayList<>();
+                        for (Drink drink : newDrinks) {
+                            if (drink == null) continue;
+
+                            // Reverted to direct assignment as the getters return primitive types
+                            int id = drink.getId();
+                            String name = drink.getName() != null ? drink.getName() : "";
+                            String description = drink.getDescription() != null ? drink.getDescription() : "";
+                            double price = drink.getBasePrice();
+                            String categoryName = drink.getCategoryName() != null ? drink.getCategoryName() : "";
+                            String imageUrl = drink.getImageUrl() != null ? drink.getImageUrl() : "";
+                            boolean isActive = drink.isActive();
+
+                            productList.add(new Product(id, name, description, price, categoryName, imageUrl, isActive));
+                        }
+                        ProductAdapter productAdapter = new ProductAdapter(productList);
                         recyclerView.setAdapter(productAdapter);
                     } else {
                         Toast.makeText(CategoryActivity.this, "No products found in this category.", Toast.LENGTH_SHORT).show();

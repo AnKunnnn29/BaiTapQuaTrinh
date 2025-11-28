@@ -10,6 +10,7 @@ import com.example.doan.Models.Product;
 import com.example.doan.Models.RegisterRequest;
 import com.example.doan.Models.RegisterResponse;
 import com.example.doan.Models.Store;
+import com.example.doan.Models.VerifyOtpRequest;
 
 import java.util.List;
 import okhttp3.MultipartBody;
@@ -32,6 +33,9 @@ public interface ApiService {
     @POST("auth/register")
     Call<ApiResponse<RegisterResponse>> register(@Body RegisterRequest request);
 
+    @POST("auth/verify-otp")
+    Call<ApiResponse<Void>> verifyOtp(@Body VerifyOtpRequest request);
+
     @GET("auth/health")
     Call<ApiResponse<String>> healthCheck();
 
@@ -48,6 +52,9 @@ public interface ApiService {
 
     @GET("drinks/{id}")
     Call<ApiResponse<Drink>> getDrinkById(@Path("id") int id);
+
+    @GET("drinks/category/{id}")
+    Call<ApiResponse<List<Drink>>> getProductsByCategory(@Path("id") int id);
 
     @GET("drinks/search")
     Call<ApiResponse<List<Drink>>> searchDrinks(@Query("keyword") String keyword);

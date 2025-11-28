@@ -1,7 +1,12 @@
 package com.example.doan.Network;
 
 import android.content.Context;
+import com.example.doan.Utils.SessionManager;
+import java.io.IOException;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -9,23 +14,17 @@ import java.util.concurrent.TimeUnit;
 
 public class RetrofitClient {
 
-    // CHÚ Ý: Thay đổi BASE_URL này khi triển khai hoặc đổi mạng
-    // Để test trên emulator: http://10.0.2.2:8080/api/
-    // Để test trên thiết bị thật: http://YOUR_IP:8080/api/ (ví dụ: http://192.168.1.100:8080/api/)
     private static final String BASE_URL = "http://10.0.2.2:8080/api/";
 
     private static RetrofitClient instance;
     private ApiService apiService;
 
     private RetrofitClient(Context context) {
-
-        // Logging interceptor
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-        // Auth interceptor để tự động thêm JWT token
+        AuthInterceptor authInterceptor = new AuthInterceptor(context);
 
-        // OkHttp client với interceptors
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(logging)
                 .addInterceptor(authInterceptor)
@@ -34,7 +33,6 @@ public class RetrofitClient {
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .build();
 
-        // Retrofit instance
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(client)
@@ -46,7 +44,7 @@ public class RetrofitClient {
 
     public static synchronized RetrofitClient getInstance(Context context) {
         if (instance == null) {
-            instance = new RetrofitClient(context);
+            instance = new RetrofitClient(context.getApplicationContext());
         }
         return instance;
     }
@@ -55,7 +53,25 @@ public class RetrofitClient {
         return apiService;
     }
 
-    // Helper method để lấy base URL cho loading images
     public static String getBaseUrl() {
+        return BASE_URL;
+    }
+
+    private static class AuthInterceptor implements Interceptor {
+        private SessionManager sessionManager;
+
+        public AuthInterceptor(Context context) {
+            this.sessionManager = new SessionManager(context);
+        }
+
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request.Builder requestBuilder = chain.request().newBuilder();
+            String token = sessionManager.getToken();
+            if (token != null && !token.isEmpty()) {
+                requestBuilder.addHeader("Authorization", "Bearer " + token);
+            }
+            return chain.proceed(requestBuilder.build());
+        }
     }
 }
