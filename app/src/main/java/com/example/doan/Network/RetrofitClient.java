@@ -60,6 +60,6 @@ public class RetrofitClient {
 
     // Helper method để lấy base URL cho loading images
     public static String getBaseUrl() {
-        return BASE_URL.replace("/api/", "");
+        return BASE_URL.substring(0, BASE_URL.lastIndexOf("/api/"));
     }
 }

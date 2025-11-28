@@ -36,18 +36,26 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         Product product = productList.get(position);
+        if (product == null) {
+            return; // Avoid processing null data
+        }
 
         holder.productName.setText(product.getName());
         holder.productPrice.setText(String.format("%,dđ", product.getPrice()));
 
+        String thumbnailUrl = product.getThumbnail();
+
+        // Use placeholder and error drawables for robustness
         Glide.with(context)
-                .load(product.getThumbnail())
+                .load(thumbnailUrl)
+                .placeholder(R.drawable.ic_tea_cup) // Display while loading
+                .error(R.drawable.ic_tea_cup)       // Display on error or if URL is null
                 .into(holder.productImage);
     }
 
     @Override
     public int getItemCount() {
-        return productList.size();
+        return productList != null ? productList.size() : 0;
     }
 
     public static class ProductViewHolder extends RecyclerView.ViewHolder {

@@ -1,120 +1,43 @@
 package com.example.doan.Models;
 
 import com.google.gson.annotations.SerializedName;
-import java.io.Serializable;
 import java.util.List;
 
-public class Drink implements Serializable {
-
+public class Drink {
     @SerializedName("id")
     private int id;
-
     @SerializedName("name")
     private String name;
-
     @SerializedName("description")
     private String description;
-
     @SerializedName("imageUrl")
     private String imageUrl;
-
     @SerializedName("basePrice")
     private double basePrice;
-
     @SerializedName("isActive")
     private boolean isActive;
-
-    @SerializedName("categoryId")
-    private int categoryId;
-
-    @SerializedName("categoryName")
-    private String categoryName;
-
     @SerializedName("sizes")
-    private List<DrinkSize> sizes;
-
+    private List<Size> sizes;
     @SerializedName("toppings")
-    private List<DrinkTopping> toppings;
+    private List<Topping> toppings;
 
-    public Drink() {}
+    // Getters
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public String getDescription() { return description; }
+    public String getImageUrl() { return imageUrl; }
+    public double getBasePrice() { return basePrice; }
+    public boolean isActive() { return isActive; }
+    public List<Size> getSizes() { return sizes; }
+    public List<Topping> getToppings() { return toppings; }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public double getBasePrice() {
-        return basePrice;
-    }
-
-    public void setBasePrice(double basePrice) {
-        this.basePrice = basePrice;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-    }
-
-    public int getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
-
-    public List<DrinkSize> getSizes() {
-        return sizes;
-    }
-
-    public void setSizes(List<DrinkSize> sizes) {
-        this.sizes = sizes;
-    }
-
-    public List<DrinkTopping> getToppings() {
-        return toppings;
-    }
-
-    public void setToppings(List<DrinkTopping> toppings) {
-        this.toppings = toppings;
-    }
+    // Setters
+    public void setId(int id) { this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setDescription(String description) { this.description = description; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public void setBasePrice(double basePrice) { this.basePrice = basePrice; }
+    public void setActive(boolean active) { isActive = active; }
+    public void setSizes(List<Size> sizes) { this.sizes = sizes; }
+    public void setToppings(List<Topping> toppings) { this.toppings = toppings; }
 }

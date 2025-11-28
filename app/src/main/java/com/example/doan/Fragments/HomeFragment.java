@@ -108,7 +108,13 @@ public class HomeFragment extends Fragment {
                         // Convert Drink to Product for adapter
                         productList.clear();
                         for (com.example.doan.Models.Drink drink : apiResponse.getData()) {
-                            Product product = new Product(); // Simplified for example
+                            Product product = new Product();
+                            product.setId(String.valueOf(drink.getId()));
+                            product.setName(drink.getName());
+                            product.setDescription(drink.getDescription());
+                            product.setPrice((int) drink.getBasePrice());
+                            String fullImageUrl = RetrofitClient.getBaseUrl() + drink.getImageUrl();
+                            product.setThumbnail(fullImageUrl);
                             productList.add(product);
                         }
                         productAdapter.notifyDataSetChanged();
