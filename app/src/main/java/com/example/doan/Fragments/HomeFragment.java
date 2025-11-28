@@ -1,8 +1,5 @@
 package com.example.doan.Fragments;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,19 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.doan.Activities.CategoryActivity;
-import com.example.doan.Activities.LoginActivity;
-import com.example.doan.Adapters.CategoryAdapter;
-import com.example.doan.Models.ApiResponse;
-import com.example.doan.Models.Category;
-import com.example.doan.Models.Drink;
 import com.example.doan.Models.Product;
 import com.example.doan.Adapters.ProductAdapter;
 import com.example.doan.R;
-import com.example.doan.Network.ApiService;
 import com.example.doan.Network.RetrofitClient;
 
 import java.util.ArrayList;
@@ -36,13 +25,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HomeFragment extends Fragment implements CategoryAdapter.OnCategoryClickListener {
+public class HomeFragment extends Fragment {
 
-    private RecyclerView categoryRecyclerView;
     private RecyclerView productRecyclerView;
-    private CategoryAdapter categoryAdapter;
     private ProductAdapter productAdapter;
-    private final List<Category> categoryList = new ArrayList<>();
     private final List<Product> productList = new ArrayList<>();
 
 
@@ -51,147 +37,63 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        categoryRecyclerView = view.findViewById(R.id.category_recycler_view);
         productRecyclerView = view.findViewById(R.id.product_recycler_view);
 
-        setupCategoryRecyclerView();
-        setupProductRecyclerView();
 
-        loadCategories();
-        loadAllProducts(); // Initially load all products
+        productRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+
+
+        productAdapter = new ProductAdapter(productList);
+        productRecyclerView.setAdapter(productAdapter);
+
+        loadProducts();
 
         return view;
     }
 
-    private void setupCategoryRecyclerView() {
-        categoryAdapter = new CategoryAdapter(getContext(), categoryList, this);
-        categoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        categoryRecyclerView.setAdapter(categoryAdapter);
-    }
-
-    private void setupProductRecyclerView() {
-        productAdapter = new ProductAdapter(getContext(), productList);
-        productRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        productRecyclerView.setAdapter(productAdapter);
-    }
-
-    @Override
-    public void onCategoryClick(int categoryId) {
-        if (categoryId == 0) {
-            loadAllProducts();
-            return;
-        }
-
-        // Kiểm tra xem người dùng đã đăng nhập chưa
-        SharedPreferences prefs = getContext().getSharedPreferences("UTETeaPrefs", Context.MODE_PRIVATE);
-        String token = prefs.getString("jwt_token", null);
-
-        if (token == null || token.isEmpty()) {
-            // Người dùng chưa đăng nhập, chuyển đến màn hình đăng nhập
-            Toast.makeText(getContext(), "Please log in to see products by category", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(getActivity(), LoginActivity.class);
-            startActivity(intent);
-        } else {
-            // Người dùng đã đăng nhập, tải sản phẩm
-            loadProductsByCategory(categoryId);
-        }
-    }
-
-    private void loadCategories() {
-        ApiService apiService = RetrofitClient.getInstance(getContext()).getApiService();
-        Call<ApiResponse<List<Category>>> call = apiService.getCategories();
-
-        call.enqueue(new Callback<ApiResponse<List<Category>>>() {
+    private void loadProducts() {
+        // Gọi API drinks từ backend mới
+        RetrofitClient.getInstance(requireContext()).getApiService().getDrinks().enqueue(new Callback<com.example.doan.Models.ApiResponse<List<com.example.doan.Models.Drink>>>() {
             @Override
-            public void onResponse(Call<ApiResponse<List<Category>>> call, Response<ApiResponse<List<Category>>> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    List<Category> newCategories = response.body().getData();
-                    if (newCategories != null) {
-                        categoryList.clear();
-                        // Add an "All" category to the beginning of the list
-                        Category allCategory = new Category();
-                        allCategory.setId(0); // Use 0 or another special ID for "All"
-                        allCategory.setName("All");
-                        categoryList.add(allCategory);
-                        categoryList.addAll(newCategories);
-                        categoryAdapter.notifyDataSetChanged();
+            public void onResponse(@NonNull Call<com.example.doan.Models.ApiResponse<List<com.example.doan.Models.Drink>>> call, 
+                                 @NonNull Response<com.example.doan.Models.ApiResponse<List<com.example.doan.Models.Drink>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    com.example.doan.Models.ApiResponse<List<com.example.doan.Models.Drink>> apiResponse = response.body();
+                    
+                    if (apiResponse.isSuccess() && apiResponse.getData() != null) {
+                        // Convert Drink to Product for adapter
+                        productList.clear();
+                        for (com.example.doan.Models.Drink drink : apiResponse.getData()) {
+                            Product product = new Product(
+                                drink.getId(),
+                                drink.getName(),
+                                drink.getDescription() != null ? drink.getDescription() : "",
+                                drink.getBasePrice(),
+                                drink.getCategoryName() != null ? drink.getCategoryName() : "",
+                                drink.getImageUrl(),
+                                drink.isActive()
+                            );
+                            productList.add(product);
+                        }
+                        productAdapter.notifyDataSetChanged();
+
+                        if (productList.isEmpty()) {
+                            Toast.makeText(getContext(), "Thực đơn hiện tại đang trống.", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "Lỗi: " + apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(getContext(), "Failed to load categories", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Lỗi tải thực đơn: " + response.code(), Toast.LENGTH_SHORT).show();
+                    Log.e("HomeFragment", "Lỗi tải sản phẩm, Code: " + response.code());
                 }
             }
 
             @Override
-            public void onFailure(Call<ApiResponse<List<Category>>> call, Throwable t) {
-                Toast.makeText(getContext(), "An error occurred while loading categories", Toast.LENGTH_SHORT).show();
+            public void onFailure(@NonNull Call<com.example.doan.Models.ApiResponse<List<com.example.doan.Models.Drink>>> call, @NonNull Throwable t) {
+                Log.e("HomeFragment", "Lỗi kết nối API: " + t.getMessage());
+                Toast.makeText(getContext(), "Không thể kết nối Server để tải thực đơn.", Toast.LENGTH_LONG).show();
             }
         });
-    }
-
-    private void loadAllProducts() {
-        ApiService apiService = RetrofitClient.getInstance(getContext()).getApiService();
-        Call<ApiResponse<List<Drink>>> call = apiService.getDrinks();
-
-        call.enqueue(new Callback<ApiResponse<List<Drink>>>() {
-            @Override
-            public void onResponse(Call<ApiResponse<List<Drink>>> call, Response<ApiResponse<List<Drink>>> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    updateProductListFromDrinks(response.body().getData());
-                } else {
-                    Toast.makeText(getContext(), "Failed to load products", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ApiResponse<List<Drink>>> call, Throwable t) {
-                Toast.makeText(getContext(), "An error occurred while loading products", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void loadProductsByCategory(int categoryId) {
-        ApiService apiService = RetrofitClient.getInstance(getContext()).getApiService();
-        Call<ApiResponse<List<Drink>>> call = apiService.getProductsByCategory(categoryId);
-
-        call.enqueue(new Callback<ApiResponse<List<Drink>>>() {
-            @Override
-            public void onResponse(Call<ApiResponse<List<Drink>>> call, Response<ApiResponse<List<Drink>>> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    updateProductListFromDrinks(response.body().getData());
-                } else {
-                    Toast.makeText(getContext(), "Failed to load products for this category", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ApiResponse<List<Drink>>> call, Throwable t) {
-                Toast.makeText(getContext(), "An error occurred: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void updateProductListFromDrinks(List<Drink> drinks) {
-        productList.clear();
-        if (drinks != null) {
-            for (Drink drink : drinks) {
-                Product product = new Product();
-                product.setId(String.valueOf(drink.getId()));
-                product.setName(drink.getName());
-                product.setDescription(drink.getDescription());
-                product.setPrice((int) drink.getBasePrice());
-                // Construct the full image URL correctly
-                String fullImageUrl = RetrofitClient.getBaseUrl() + drink.getImageUrl();
-                product.setThumbnail(fullImageUrl);
-                productList.add(product);
-            }
-        }
-        productAdapter.notifyDataSetChanged();
-        checkIfProductListIsEmpty();
-    }
-
-    private void checkIfProductListIsEmpty() {
-        if (productList.isEmpty()) {
-            Toast.makeText(getContext(), "No products found.", Toast.LENGTH_SHORT).show();
-        }
     }
 }

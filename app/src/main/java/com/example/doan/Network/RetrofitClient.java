@@ -18,14 +18,12 @@ public class RetrofitClient {
     private ApiService apiService;
 
     private RetrofitClient(Context context) {
-        Context appContext = context.getApplicationContext();
 
         // Logging interceptor
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         // Auth interceptor để tự động thêm JWT token
-        AuthInterceptor authInterceptor = new AuthInterceptor(appContext);
 
         // OkHttp client với interceptors
         OkHttpClient client = new OkHttpClient.Builder()
@@ -59,7 +57,5 @@ public class RetrofitClient {
 
     // Helper method để lấy base URL cho loading images
     public static String getBaseUrl() {
-        // Trả về URL gốc, ví dụ: "http://10.0.2.2:8080"
-        return BASE_URL.substring(0, BASE_URL.lastIndexOf("/api/"));
     }
 }
