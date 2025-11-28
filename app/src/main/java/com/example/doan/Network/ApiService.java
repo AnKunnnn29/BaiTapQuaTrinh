@@ -52,12 +52,6 @@ public interface ApiService {
     @GET("drinks/search")
     Call<ApiResponse<List<Drink>>> searchDrinks(@Query("keyword") String keyword);
 
-    // Simplified the endpoint to remove unsupported parameters
-    @GET("drinks/category/{categoryId}")
-    Call<ApiResponse<List<Drink>>> getProductsByCategory(
-            @Path("categoryId") int categoryId
-    );
-
     // ==================== STORES ====================
     @GET("stores")
     Call<ApiResponse<List<Store>>> getStores();

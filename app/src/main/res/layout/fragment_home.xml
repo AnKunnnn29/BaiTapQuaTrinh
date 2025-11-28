@@ -25,6 +25,14 @@
             android:layout_marginBottom="16dp">
         </RelativeLayout>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/login_button"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginBottom="24dp"
+            android:backgroundTint="@color/black"
+            android:text="ĐĂNG KÝ/ ĐĂNG NHẬP"
+            app:cornerRadius="20dp" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/banner_card"
@@ -44,23 +52,23 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/footer_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
+            android:text="Khung giờ áp dụng: 7:00 - 21:30"
+            tools:ignore="HardcodedText" />
+
+        <TextView
             android:id="@+id/section_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Thực đơn/Sản phẩm"
-            android:textColor="@color/black"
+            android:text="Thực đơn/Sản phẩm"  android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginBottom="16dp"
             tools:ignore="HardcodedText" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/category_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/product_recycler_view"

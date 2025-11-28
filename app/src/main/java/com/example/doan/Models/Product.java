@@ -2,12 +2,11 @@ package com.example.doan.Models;
 
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
-import java.util.Date;
 
 public class Product implements Serializable {
 
-    @SerializedName("_id")
-    private String id;
+    @SerializedName("id")
+    private int id;
 
     @SerializedName("name")
     private String name;
@@ -16,81 +15,66 @@ public class Product implements Serializable {
     private String description;
 
     @SerializedName("price")
-    private int price;
-
-    @SerializedName("thumbnail")
-    private String thumbnail;
-
-    @SerializedName("quantity")
-    private int quantity;
+    private double price;
 
     @SerializedName("category")
-    private Category category;
+    private String category;
 
-    @SerializedName("createdAt")
-    private Date createdAt;
+    @SerializedName("image_url")
+    private String imageUrl;
 
-    public String getId() {
-        return id;
-    }
+    @SerializedName("is_available")
+    private boolean isAvailable;
 
-    public void setId(String id) {
+
+    public Product(int id, String name, String description, double price, String category, String imageUrl, boolean isAvailable) {
         this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.category = category;
+        this.imageUrl = imageUrl;
+        this.isAvailable = isAvailable;
+    }
+    public Product() { }
+
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    public String getThumbnail() {
-        return thumbnail;
-    }
-
-    public void setThumbnail(String thumbnail) {
-        this.thumbnail = thumbnail;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public Category getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public boolean isAvailable() {
+        return isAvailable;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", category='" + category + '\'' +
+                ", isAvailable=" + isAvailable +
+                '}';
     }
 }
