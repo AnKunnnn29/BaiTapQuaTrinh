@@ -37,7 +37,7 @@ public interface ApiService {
     Call<ApiResponse<String>> registerWithOtp(@Body RegisterRequest request);
 
     @POST("auth/otp-verify")
-    Call<ApiResponse<LoginResponse>> verifyOtpNew(@Body VerifyOtpRequest request);
+    Call<ApiResponse<String>> verifyOtp(@Body VerifyOtpRequest request);
 
     @POST("auth/resend-otp")
     Call<ApiResponse<String>> resendOtp(@Query("target") String emailOrPhone);

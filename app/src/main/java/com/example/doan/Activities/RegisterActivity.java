@@ -13,9 +13,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.doan.Models.ApiResponse;
 import com.example.doan.Models.RegisterRequest;
-import com.example.doan.Models.RegisterResponse;
 import com.example.doan.Network.RetrofitClient;
 import com.example.doan.R;
+
+import org.json.JSONObject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,38 +69,49 @@ public class RegisterActivity extends AppCompatActivity {
 
         RegisterRequest registerRequest = new RegisterRequest(username, email, password, username, "");
 
-        RetrofitClient.getInstance(this).getApiService().register(registerRequest).enqueue(new Callback<ApiResponse<RegisterResponse>>() {
-            @Override
-            public void onResponse(@NonNull Call<ApiResponse<RegisterResponse>> call, @NonNull Response<ApiResponse<RegisterResponse>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<RegisterResponse> apiResponse = response.body();
-                    if (apiResponse.isSuccess()) {
-                        Toast.makeText(RegisterActivity.this, "Đăng ký thành công! Vui lòng xác thực OTP.", Toast.LENGTH_LONG).show();
-                        Log.d(TAG, "Creating Intent to OtpActivity...");
-                        Intent intent = new Intent(RegisterActivity.this, OtpActivity.class);
-                        intent.putExtra("USER_IDENTIFIER", email);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        Log.d(TAG, "Starting OtpActivity...");
-                        startActivity(intent);
-                        Log.d(TAG, "Finishing RegisterActivity...");
-                        finish();
-                        Log.d(TAG, "=============== END REGISTER SUCCESS ===============");
-                    } else {
-                        String message = apiResponse.getMessage() != null ? apiResponse.getMessage() : "Đăng ký thất bại.";
-                        Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_LONG).show();
-                        Log.e(TAG, "Register failed: " + message);
+        RetrofitClient.getInstance(this).getApiService().registerWithOtp(registerRequest)
+                .enqueue(new Callback<ApiResponse<String>>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ApiResponse<String>> call, @NonNull Response<ApiResponse<String>> response) {
+                        // Case 1: Phản hồi HTTP thành công (mã 2xx)
+                        if (response.isSuccessful() && response.body() != null) {
+                            ApiResponse<String> apiResponse = response.body();
+                            // Kiểm tra cờ 'success' trong nội dung phản hồi
+                            if (apiResponse.isSuccess()) {
+                                Toast.makeText(RegisterActivity.this, apiResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(RegisterActivity.this, OtpActivity.class);
+                                intent.putExtra("USER_IDENTIFIER", email);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                // Server trả về 200 OK nhưng báo lỗi (ví dụ: success: false)
+                                Toast.makeText(RegisterActivity.this, apiResponse.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            // Case 2: Phản hồi HTTP thất bại (mã 4xx, 5xx)
+                            String errorMessage = "Lỗi đăng ký. Code: " + response.code();
+                            if (response.errorBody() != null) {
+                                try {
+                                    String errorBodyStr = response.errorBody().string();
+                                    Log.e(TAG, "Server error response: " + errorBodyStr);
+                                    // Cố gắng phân tích JSON để lấy thông báo lỗi chi tiết
+                                    JSONObject errorObj = new JSONObject(errorBodyStr);
+                                    if (errorObj.has("message")) {
+                                        errorMessage = errorObj.getString("message");
+                                    }
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Error parsing error body", e);
+                                }
+                            }
+                            Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                        }
                     }
-                } else {
-                    Toast.makeText(RegisterActivity.this, "Đăng ký thất bại. Lỗi Server.", Toast.LENGTH_LONG).show();
-                    Log.e(TAG, "Register failed, Code: " + response.code());
-                }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<ApiResponse<RegisterResponse>> call, @NonNull Throwable t) {
-                Toast.makeText(RegisterActivity.this, "Không thể kết nối Server để đăng ký.", Toast.LENGTH_LONG).show();
-                Log.e(TAG, "Lỗi kết nối: " + t.getMessage());
-            }
+                    @Override
+                    public void onFailure(@NonNull Call<ApiResponse<String>> call, @NonNull Throwable t) {
+                        Log.e(TAG, "Lỗi mạng: " + t.getMessage());
+                        Toast.makeText(RegisterActivity.this, "Lỗi mạng, không thể kết nối server.", Toast.LENGTH_SHORT).show();
+                    }
         });
     }
 }
