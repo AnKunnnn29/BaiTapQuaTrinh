@@ -15,23 +15,25 @@ public class StartActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_start);
 
+        MaterialButton startButton = findViewById(R.id.btn_start);
         SessionManager sessionManager = new SessionManager(this);
-        if (sessionManager.isLoggedIn()) {
-            Intent intent = new Intent(StartActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        } else {
-            setContentView(R.layout.activity_start);
-            MaterialButton startButton = findViewById(R.id.btn_start);
-            startButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(StartActivity.this, LoginActivity.class);
+
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (sessionManager.isLoggedIn()) {
+                    //  đã login -> chuyển đến trang Main
+                    Intent intent = new Intent(StartActivity.this, MainActivity.class);
                     startActivity(intent);
-                    finish();
+                } else {
+                    // Chuyển qua trang welcome
+                    Intent intent = new Intent(StartActivity.this, WelcomeActivity.class);
+                    startActivity(intent);
                 }
-            });
-        }
+                finish();
+            }
+        });
     }
 }
