@@ -6,10 +6,4 @@
     <item
         android:id="@+id/filter_price_asc"
         android:title="Lọc theo giá tăng dần" />
-    <item
-        android:id="@+id/filter_price_30_50"
-        android:title="Lọc trong tầm giá 30-50k" />
-    <item
-        android:id="@+id/filter_price_above_50"
-        android:title="Lọc các món trên 50k" />
 </menu>

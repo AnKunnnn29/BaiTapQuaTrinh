@@ -81,12 +81,6 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
             } else if (itemId == R.id.filter_price_asc) {
                 sortProductsByPrice(true); // true for ascending
                 return true;
-            } else if (itemId == R.id.filter_price_30_50) {
-                filterByPriceRange(30000, 50000);
-                return true;
-            } else if (itemId == R.id.filter_price_above_50) {
-                filterByPriceRange(50001, Double.MAX_VALUE);
-                return true;
             }
             return false;
         });
@@ -99,19 +93,6 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
         } else {
             currentProductList.sort((p1, p2) -> Double.compare(p2.getPrice(), p1.getPrice()));
         }
-        productAdapter.notifyDataSetChanged();
-    }
-
-    private void filterByPriceRange(double min, double max) {
-        filterProductsByCategory(currentCategoryName); // re-apply category filter first
-        List<Product> filteredList = new ArrayList<>();
-        for (Product product : currentProductList) {
-            if (product.getPrice() >= min && product.getPrice() <= max) {
-                filteredList.add(product);
-            }
-        }
-        currentProductList.clear();
-        currentProductList.addAll(filteredList);
         productAdapter.notifyDataSetChanged();
     }
 
