@@ -1,6 +1,6 @@
-# 🍵 UTE TEA - Android App
+# 🍵 DEMO KIỂM TRA QUÁ TRÌNH - Android App - APP BÁN TRÀ SỮA
 
-> Ứng dụng đặt trà sữa trực tuyến cho sinh viên UTE
+> Ứng dụng đặt trà sữa trực tuyến
 
 [![Android](https://img.shields.io/badge/Android-24%2B-green.svg)](https://developer.android.com)
 [![Java](https://img.shields.io/badge/Java-11-orange.svg)](https://www.oracle.com/java/)
@@ -10,67 +10,22 @@
 
 ## 📱 Giới thiệu
 
-**UTE Tea Android App** là ứng dụng mobile cho phép sinh viên UTE đặt trà sữa online, xem menu, tìm cửa hàng và theo dõi đơn hàng.
 
 ### ✨ Tính năng chính
 
 - 🔐 Đăng ký / Đăng nhập với JWT authentication
 - 🥤 Xem menu 16+ món nước với 4 categories
-- 🏪 Tìm kiếm 2 cửa hàng UTE
-- 🛒 Đặt hàng online (Delivery/Pickup)
-- 🎟️ Áp dụng mã giảm giá
-- 📦 Theo dõi đơn hàng
-- 👤 Quản lý tài khoản và member tier
 
 ---
+1. Kích vào nút "Bắt đầu" của Trang Intro (tùy mỗi nhóm sẽ khác nhau) để chuyển qua trang login, nếu đã login rồi thì chuyển đến trang Main. Nếu chưa có tài khoản thì thực hiện chức năng Register							
+2. Xây dựng UI cho chức năng đăng ký người dùng có kích hoạt bằng OTP (6 số), kích hoạt thành công quay về trang login							
+3. Xây dựng UI cho chức năng đăng nhập người dùng. Đăng nhập username và password để vào trang Main							
+4. Xây dựng UI Trang main lấy thông tin người dùng đã đăng nhập							
+5. Xây dựng UI chức năng lấy tất cả Categories theo chiều ngang với API							
+6. Xây dựng UI chức năng lấy tất cả sản phẩm theo từng category được sắp xếp tăng dần theo giá bán hiển thị dạng lưới							
+7. Viết các API liên kết với Database
 
-## 🚀 Quick Start
-
-### 1. Chạy Backend
-```bash
-cd Backend_UTEtea
-.\mvnw.cmd spring-boot:run
-```
-
-### 2. Cấu hình Base URL
-
-**Emulator (mặc định):**
-```java
-// RetrofitClient.java
-private static final String BASE_URL = "http://10.0.2.2:8080/api/";
-```
-
-**Thiết bị thật:**
-```java
-// Thay YOUR_IP bằng IP máy tính (tìm bằng ipconfig)
-private static final String BASE_URL = "http://192.168.1.100:8080/api/";
-```
-
-### 3. Build & Run
-```bash
-# Mở Android Studio
-# Build > Make Project
-# Run > Run 'app'
-```
-
-### 4. Test Login
-```
-Username: ute_student_01
-Password: 123456
-```
-
-✅ Done! App đã kết nối với backend.
-
----
-
-## 📚 Documentation
-
-| File | Mô tả |
-|------|-------|
-| [QUICK-TEST.md](QUICK-TEST.md) | ⚡ Test app trong 5 phút |
-| [ANDROID-API-SETUP.md](ANDROID-API-SETUP.md) | 📖 Hướng dẫn setup chi tiết |
-| [EXAMPLE-USAGE.md](EXAMPLE-USAGE.md) | 💻 Code examples |
-| [CHANGES-SUMMARY.md](CHANGES-SUMMARY.md) | 📋 Tóm tắt thay đổi |
+   
 
 ---
 
@@ -226,15 +181,6 @@ session.logout();
 ```
 
 ---
-
-## 🧪 Testing
-
-### Test Accounts
-```
-Username: ute_student_01  | Password: 123456 | Role: USER (BRONZE)
-Username: ute_student_02  | Password: 123456 | Role: USER (SILVER)
-Username: ute_student_03  | Password: 123456 | Role: USER (GOLD)
-Username: manager_ute     | Password: 123456 | Role: MANAGER
 ```
 
 ### Test trên Emulator
