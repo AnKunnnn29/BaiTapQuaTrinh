@@ -19,9 +19,9 @@
         android:theme="@style/Theme.DoAn"
         android:usesCleartextTraffic="true">
 
-        <!-- Start Activity as Launcher -->
+        <!-- Splash Screen as Launcher -->
         <activity
-            android:name=".Activities.StartActivity"
+            android:name=".Activities.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.DoAn">
             <intent-filter>
@@ -30,9 +30,9 @@
             </intent-filter>
         </activity>
 
-        <!-- Splash Screen -->
+        <!-- Start Activity -->
         <activity
-            android:name=".Activities.SplashActivity"
+            android:name=".Activities.StartActivity"
             android:exported="false"
             android:theme="@style/Theme.DoAn" />
 
@@ -58,7 +58,6 @@
             android:name=".Activities.RegisterActivity"
             android:exported="false"
             android:theme="@style/Theme.DoAn" />
-
 
         <activity android:name=".Activities.OtpActivity"
             android:exported="false"
