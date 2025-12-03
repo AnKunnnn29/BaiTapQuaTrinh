@@ -357,27 +357,22 @@ Nếu gặp vấn đề:
 
 
 ===============================
-# Git Test Project Images
+<img width="403" height="870" alt="image" src="https://github.com/user-attachments/assets/87bd7fa6-7362-423d-ab67-8ba5f3cbff52" />
 
-Đây là các hình ảnh giao diện từ dự án:
+<img width="418" height="867" alt="image" src="https://github.com/user-attachments/assets/76548960-214e-4248-8c45-993045f25be0" />
 
-## 1. Màn hình Bắt đầu (Start)
-![Màn hình Bắt đầu](https://raw.githubusercontent.com/xinloihuy/git_test/main/images/start.png)
+<img width="429" height="828" alt="image" src="https://github.com/user-attachments/assets/b9ec39f1-e188-450a-b40f-311f06dd5839" />
 
-## 2. Màn hình Đăng ký (Register)
-![Màn hình Đăng ký](https://raw.githubusercontent.com/xinloihuy/git_test/main/images/register.png)
+<img width="448" height="912" alt="image" src="https://github.com/user-attachments/assets/fb282149-29cb-4217-a8f7-2b39690ab36c" />
 
-## 3. Màn hình Đăng nhập (Login)
-![Màn hình Đăng nhập](https://raw.githubusercontent.com/xinloihuy/git_test/main/images/login.png)
+<img width="452" height="529" alt="image" src="https://github.com/user-attachments/assets/81613c76-de7b-4e48-9ef1-82fbf3e35838" />
 
-## 4. Màn hình OTP
-![Màn hình OTP](https://raw.githubusercontent.com/xinloihuy/git_test/main/images/otp.png)
+<img width="454" height="523" alt="image" src="https://github.com/user-attachments/assets/37de377c-fecf-40f2-b8f4-badf839f64a0" />
 
-## 5. Màn hình Xác thực OTP Thành công
-![Màn hình OTP thành công](https://raw.githubusercontent.com/xinloihuy/git_test/main/images/otp_succeed.png)
+<img width="353" height="763" alt="image" src="https://github.com/user-attachments/assets/a544d37a-ce81-44fc-9af3-4e45b56723fe" />
 
-## 6. Màn hình Trang chủ (Home)
-![Màn hình Trang chủ](https://raw.githubusercontent.com/xinloihuy/git_test/main/images/home.png)
+![UI](./images/verify-otp.png)
+
 
 
 

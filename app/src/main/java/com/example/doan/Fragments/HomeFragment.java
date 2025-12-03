@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,6 +42,7 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
     private final List<Product> currentProductList = new ArrayList<>();
     private final List<Product> allProducts = new ArrayList<>(); // To store all products
     private final List<Category> categoryList = new ArrayList<>();
+    private String currentCategoryName = null;
 
     @Nullable
     @Override
@@ -58,10 +61,58 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
         categoryAdapter = new CategoryAdapter(categoryList, this);
         categoryRecyclerView.setAdapter(categoryAdapter);
 
+        ImageButton filterButton = view.findViewById(R.id.filter_button);
+        filterButton.setOnClickListener(this::showFilterMenu);
+
         loadCategories();
         loadAllProducts();
 
         return view;
+    }
+
+    private void showFilterMenu(View v) {
+        PopupMenu popup = new PopupMenu(requireContext(), v);
+        popup.getMenuInflater().inflate(R.menu.filter_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.filter_price_desc) {
+                sortProductsByPrice(false); // false for descending
+                return true;
+            } else if (itemId == R.id.filter_price_asc) {
+                sortProductsByPrice(true); // true for ascending
+                return true;
+            } else if (itemId == R.id.filter_price_30_50) {
+                filterByPriceRange(30000, 50000);
+                return true;
+            } else if (itemId == R.id.filter_price_above_50) {
+                filterByPriceRange(50001, Double.MAX_VALUE);
+                return true;
+            }
+            return false;
+        });
+        popup.show();
+    }
+
+    private void sortProductsByPrice(boolean ascending) {
+        if (ascending) {
+            currentProductList.sort((p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice()));
+        } else {
+            currentProductList.sort((p1, p2) -> Double.compare(p2.getPrice(), p1.getPrice()));
+        }
+        productAdapter.notifyDataSetChanged();
+    }
+
+    private void filterByPriceRange(double min, double max) {
+        filterProductsByCategory(currentCategoryName); // re-apply category filter first
+        List<Product> filteredList = new ArrayList<>();
+        for (Product product : currentProductList) {
+            if (product.getPrice() >= min && product.getPrice() <= max) {
+                filteredList.add(product);
+            }
+        }
+        currentProductList.clear();
+        currentProductList.addAll(filteredList);
+        productAdapter.notifyDataSetChanged();
     }
 
     private void loadCategories() {
@@ -137,13 +188,16 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
     @Override
     public void onCategoryClick(Category category) {
         if (category.getName().equals("Tất cả")) {
+            currentCategoryName = null;
             filterProductsByCategory(null); // Pass null to show all
         } else {
+            currentCategoryName = category.getName();
             filterProductsByCategory(category.getName());
         }
     }
 
     private void filterProductsByCategory(String categoryName) {
+        this.currentCategoryName = categoryName;
         currentProductList.clear();
         if (categoryName == null) {
             currentProductList.addAll(allProducts);
@@ -154,8 +208,6 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
                 }
             }
         }
-        // Sort products by price in ascending order
-        currentProductList.sort((p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice()));
         productAdapter.notifyDataSetChanged();
     }
 }
