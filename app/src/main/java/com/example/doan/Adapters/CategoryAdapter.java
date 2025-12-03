@@ -64,6 +64,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             Glide.with(itemView.getContext())
                  .load(imageUrl)
                  .placeholder(R.drawable.ic_launcher_background)
+                 .error(R.drawable.ic_launcher_background) // Display an error image if loading fails
                  .into(categoryImage);
 
             itemView.setOnClickListener(v -> listener.onCategoryClick(category));

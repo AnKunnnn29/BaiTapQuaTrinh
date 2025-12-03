@@ -15,17 +15,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.doan.Adapters.CategoryAdapter;
+import com.example.doan.Adapters.ProductGridAdapter;
 import com.example.doan.Models.ApiResponse;
 import com.example.doan.Models.Category;
 import com.example.doan.Models.Drink;
 import com.example.doan.Models.Product;
-import com.example.doan.Adapters.ProductAdapter;
 import com.example.doan.R;
 import com.example.doan.Network.RetrofitClient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,7 +34,7 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
 
     private RecyclerView productRecyclerView;
     private RecyclerView categoryRecyclerView;
-    private ProductAdapter productAdapter;
+    private ProductGridAdapter productAdapter;
     private CategoryAdapter categoryAdapter;
 
     private final List<Product> currentProductList = new ArrayList<>();
@@ -50,7 +49,7 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
         // Product RecyclerView
         productRecyclerView = view.findViewById(R.id.product_recycler_view);
         productRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        productAdapter = new ProductAdapter(currentProductList);
+        productAdapter = new ProductGridAdapter(currentProductList);
         productRecyclerView.setAdapter(productAdapter);
 
         // Category RecyclerView
@@ -106,13 +105,13 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
                         allProducts.clear();
                         for (Drink drink : apiResponse.getData()) {
                             Product product = new Product(
-                                drink.getId(),
-                                drink.getName(),
-                                drink.getDescription() != null ? drink.getDescription() : "",
-                                drink.getBasePrice(),
-                                drink.getCategoryName() != null ? drink.getCategoryName() : "",
-                                drink.getImageUrl(),
-                                drink.isActive()
+                                    drink.getId(),
+                                    drink.getName(),
+                                    drink.getDescription() != null ? drink.getDescription() : "",
+                                    drink.getBasePrice(),
+                                    drink.getCategoryName() != null ? drink.getCategoryName() : "",
+                                    drink.getImageUrl(),
+                                    drink.isActive()
                             );
                             allProducts.add(product);
                         }
@@ -155,8 +154,8 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
                 }
             }
         }
-        // Sort products by name in ascending order
-        currentProductList.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+        // Sort products by price in ascending order
+        currentProductList.sort((p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice()));
         productAdapter.notifyDataSetChanged();
     }
 }
